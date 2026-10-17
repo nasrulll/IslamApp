@@ -13,4 +13,4 @@ Kerangka awal aplikasi web dan API bootstrap yang **belum siap produksi**. Belum
 - Aktifkan hook lokal sekali: `git config core.hooksPath .githooks`
 - Periksa sebelum push: `python -m tools.repo_visibility_guard --visibility public --history`
 
-Jangan menambahkan korpus, kredensial, atau data pihak ketiga ke repository ini.
+Jangan menambahkan korpus, kredensial, atau data pihak ketiga ke repository ini. Aturan lengkap: [CONTRIBUTING.md](CONTRIBUTING.md).
