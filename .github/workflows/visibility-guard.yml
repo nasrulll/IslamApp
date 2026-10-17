@@ -1,0 +1,54 @@
+name: Repository visibility guard
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  public:
+  workflow_dispatch:
+    inputs:
+      assume:
+        description: Apply public-mode rules even while the repository is private (pre-flight)
+        type: choice
+        options:
+          - auto
+          - public
+        default: auto
+      history:
+        description: Also scan every commit (required before making the repository public)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: visibility-guard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      REPO_PRIVATE: ${{ github.event.repository.private }}
+      FORCE_PUBLIC_RULES: ${{ (github.event_name == 'workflow_dispatch' && inputs.assume == 'public') || vars.FORCE_PUBLIC_RULES == 'true' }}
+      FULL_HISTORY: ${{ github.event_name == 'public' || inputs.history == true }}
+    steps:
+      - uses: actions/checkout@v4
+        if: env.FULL_HISTORY != 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        if: env.FULL_HISTORY == 'true'
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Test guard rules (stdlib only)
+        run: python3 -m unittest -q tests.test_repo_visibility_guard
+      - name: Guard current tree (stdlib only, no dependency install)
+        if: env.FULL_HISTORY != 'true'
+        run: python3 -m tools.repo_visibility_guard
+      - name: Guard current tree and every commit
+        if: env.FULL_HISTORY == 'true'
+        run: python3 -m tools.repo_visibility_guard --history

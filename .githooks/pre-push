@@ -1,0 +1,7 @@
+#!/bin/sh
+# Free local check before pushing, so CI minutes are not spent on avoidable failures.
+# Install once:  git config core.hooksPath .githooks
+# Private rules by default; for a repository that is or will be public:  REPO_VISIBILITY=public git push
+root="$(git rev-parse --show-toplevel)" || exit 1
+cd "$root" || exit 1
+REPO_VISIBILITY="${REPO_VISIBILITY:-private}" exec python3 -m tools.repo_visibility_guard

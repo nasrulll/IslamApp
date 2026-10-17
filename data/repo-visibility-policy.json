@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Safety layer for switching the repository between private and public. Fail-closed: unknown visibility is treated as public.",
+  "forbidden_path_globs": [
+    ".env",
+    ".env.*",
+    "*.pem",
+    "*.key",
+    "*.p12",
+    "id_rsa*",
+    "id_ed25519*",
+    "*.parquet",
+    "*.sqlite",
+    "*.sqlite3",
+    "*.db",
+    "pages.jsonl",
+    "audit-output/*",
+    "*private-report*",
+    "*restricted-review*",
+    ".netrc",
+    ".pypirc",
+    "*.pfx",
+    "*.jks",
+    "*.keystore",
+    "*.kdbx",
+    "id_ecdsa*",
+    "credentials.json",
+    "service-account*.json",
+    "*.tfstate",
+    "*.tfstate.*",
+    "*.dump",
+    "*.sql.gz",
+    "*.zip",
+    "*.7z",
+    "*.rar",
+    "*.tar",
+    "*.tar.gz",
+    "*.tgz"
+  ],
+  "allowed_path_globs": [
+    ".env.example"
+  ],
+  "secret_patterns": {
+    "hub_token": "h[f]_[A-Za-z0-9]{30,}",
+    "github_token": "(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{36,}",
+    "github_fine_grained_token": "github_pat_[A-Za-z0-9_]{50,}",
+    "anthropic_key": "sk-ant-[A-Za-z0-9_-]{20,}",
+    "aws_access_key": "AKIA[0-9A-Z]{16}",
+    "private_key_block": "-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY( BLOCK)?-----",
+    "openai_key": "sk-(proj-)?[A-Za-z0-9]{32,}",
+    "google_api_key": "AIza[0-9A-Za-z_-]{35}",
+    "slack_token": "xox[abprs]-[A-Za-z0-9-]{10,}",
+    "stripe_live_key": "(sk|rk)_live_[A-Za-z0-9]{20,}",
+    "npm_auth_token": "_authToken=(?!\\$\\{)[A-Za-z0-9._-]{16,}",
+    "database_url_with_password": "(postgres|postgresql|mysql|mongodb(\\+srv)?)(\\+\\w+)?://[^\\s:/@]+:[^\\s@/]{4,}@(?!localhost\\b|127\\.0\\.0\\.1\\b)"
+  },
+  "forbidden_workflow_triggers": [
+    "pull_request_target",
+    "workflow_run"
+  ],
+  "public_only": {
+    "forbidden_path_globs": [
+      "*.pdf",
+      "*.epub",
+      "*.mobi",
+      "*.azw3",
+      "*.djvu",
+      "*.doc",
+      "*.docx",
+      "*.jsonl",
+      "*.csv"
+    ],
+    "secret_workflow_allowed_triggers": [
+      "push",
+      "workflow_dispatch",
+      "schedule"
+    ],
+    "max_file_bytes": 1048576,
+    "max_arabic_chars_per_file": 3000,
+    "arabic_allowed_path_globs": [
+      "tests/fixtures/*"
+    ],
+    "restricted_artifact_words": [
+      "restricted",
+      "internal",
+      "private",
+      "raw",
+      "corpus",
+      "text"
+    ],
+    "artifact_workflow_allowlist": [],
+    "artifact_allowlist_basis": "Declared aggregate/sanitized-only in the workflow step names and paths. The owner must confirm each before the first public switch. Artifacts of public repositories are downloadable by anyone.",
+    "private_guard_marker": "repository.private",
+    "source_trace_token_sha256": [
+      "64da817f607e940546c59f63e69dc0cf1e2e4b079de5b083cd6e1800f669b87c",
+      "a218e6b457b854af5d1812006d72b208390de89cd1f3d1aec2c82df481a961e7",
+      "b02e43bdec738f2c4c8570950bbd21e169c637d599650ff348ded64ad195ea44",
+      "c00305a5923742456f10b9b6059afa554487739c31b876eeb497fd407e6047f2",
+      "d203a277f19a8f7d78fe8e9a621534b2cbd8ef1f0d809908ffc481e778858872",
+      "d4214911203a1bff9e3310e898c18d738fcb56555f69c60dbac8630da9791889",
+      "ed121487ce5d6c5a0486b0130d29a4332de814dd826f48a96ac5d181bb8731cf",
+      "fd3b4f145c4b8144eced7e982292fc53f9d1c6d79108190366998de31c324e5c"
+    ],
+    "source_trace_basis": "SHA-256 of lowercase alphanumeric tokens that reveal where source data is hosted. Stored hashed so this policy and CI logs do not themselves become a trace."
+  }
+}
